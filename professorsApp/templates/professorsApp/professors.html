@@ -1,0 +1,24 @@
+<h1>Professors</h1>
+<ul>
+{% for prof in latest %}
+	{% if prof.hidden == False %}
+		<a href="{% url 'professorsApp:viewProf' prof.id%}">{{ prof.name }}</a> 
+		<div style="margin:8px;">
+			<script>
+				document.write(("{{prof.info}}").substring(0, 100));
+				{% if prof.info|length > 100 %}
+					document.write("...");
+				{% endif %}
+			</script>
+		</div>
+	{% endif %}
+{% endfor %}
+</ul>
+
+{% if prev_page %}
+	<a href="{% url 'professorsApp:homePage' prev_page %}">Previous</a>
+{% endif %}
+
+{% if next_page %}
+	<a href="{% url 'professorsApp:homePage' next_page %}">Next</a>
+{% endif %}

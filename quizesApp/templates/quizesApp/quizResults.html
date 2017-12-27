@@ -1,0 +1,58 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Quiz results {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1><b>{{quiz.session.course.name}} - Quiz results</b></h1>
+            <h1>
+                <small style="color:gray;">
+                    <div class="inline pull-right"><b>Deadline</b> {{quiz.deadline}} </div>
+                    <b>Students answered</b> <span> {{answers.count}} / {{quiz.session.studentinfo_set.count}} </span>
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="list-group">
+                    {% for student_answer in answers %}
+                        <a class="list-group-item
+                            {% if student_answer.grade != '---' %}
+                                list-group-item-success
+                            {% endif %}">
+                            <div class="row pgRow">
+                                <div class="col-md-4">
+                                    <b>{{student_answer.student.full_name}}</b>
+                                </div>
+                                <div class="col-md-1">
+                                    <b>Grade</b> <!-- <input class="form-control" type="text" value="{{student_answer.grade}}"/> -->
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="grade">
+                                        <option value='---'>---</option>
+                                        {% for grade in grades %}
+                                            <option value='{{grade}}' {% if student_answer.grade == grade|stringformat:"i" %} selected="selected" {%endif%}>{{grade}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-right">
+                                        <button onclick="location.href='{{student_answer.answerFile.url}}'" type="button" class="btn btn-default"><b>View answer</b></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <a class="list-group-item">There's no answers yet!</a>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-default pull-right"><b>Save changes</b></button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

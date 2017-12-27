@@ -1,0 +1,68 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{group.name}} Department {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{group.name}} Department {% if show_mark %} <span class="label label-default">Your department</span>{%endif%}</h1>
+            <hr/>
+            <div class="panel panel-default">
+                <table class="table table-bordered table-striped table-condensed text-center">
+                    <tr>
+                        <td>Code</td>
+                        <td>Course name</td>
+                        <td>Duration</td>
+                        <td>Practical duration</td>
+                        <td>Theoretical</td>
+                        <td>Oral</td>
+                        <td>Practical</td>
+                        <td>Prerequisites</td>
+                    </tr>
+                    {% for course in group_courses %}
+                    <tr class="{% if course.name in user_completed_courses %} success {% endif %}">
+                            <td><a href="{% url 'coursesApp:view_course' course.id %}">{{course.code}}</a></td>
+                            <td>{{course.name}}</td>
+                            <td>{{course.duration|time:"h:i"}}</td>
+                            <td>{{course.applications_duration|time:"h:i"}}</td>
+                            <td>{{course.max_written_result}}</td>
+                            <td>{{course.max_oral_result}}</td>
+                            <td>{{course.max_app_result}}</td>
+                            <td>
+                                <div class="text-left">
+                                    {% for pre in course.prequels.all %}
+                                        <a href="{% url 'coursesApp:view_course' course.id %}">{{pre.name}}.</a> <br/>
+                                    {% endfor %}
+                                </div> 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            {% if dep %}
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Next year department embranchment
+                    </div>
+                    <table class="table table-bordered table-striped table-condensed">
+                        <tr>
+                            <td class="text-center">Department</td>
+                        </tr>
+                        {% for n_dep in dep.sequels.all %}
+                        <tr>
+                            <td><a href="{% url 'departmentsApp:view_department' n_dep.id %}">{{n_dep.name}}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <h3>There's no more embranchments after this, this is the last year.</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

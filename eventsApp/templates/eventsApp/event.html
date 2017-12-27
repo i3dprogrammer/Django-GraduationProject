@@ -1,0 +1,46 @@
+<div style="margin: 10px;">
+	<h1>{{ event.name }}</h1>
+	<small style="color:gray;">
+		{{event.date}}
+	</small>
+	
+	<h2>Information</h2>
+	<div style="margin-top:20px">
+	 {{ event.info }}
+	</div>
+
+	<h2><strong>Going</strong><h2>
+	<table border=1>
+		<tr>
+			<td><center>Name</center></td>
+		</tr>
+		{% for user in event.usersGoing.all %}
+			<tr>
+				<td>
+					{% if user.first_name %}
+						{{user.first_name}} {{user.last_name }} 
+					{% else %}
+						{{user.username}}
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<h2><strong>Interested</strong><h2>
+	<table border=1>
+		<tr>
+			<td><center>Name</center></td>
+		</tr>
+		{% for user in event.usersInterested.all %}
+			<tr>
+				<td>
+					{% if user.first_name %}
+						{{user.first_name}} {{user.last_name }} 
+					{% else %}
+						{{user.username}}
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>

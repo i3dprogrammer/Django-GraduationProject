@@ -1,0 +1,91 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{user.first_name}} {{user.last_name}} Semesters {% endblock %}
+{% block profileActive %} active {% endblock %}
+{% block content %}
+<div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning" role="alert" style="margin:10px;{% if not notifications %} display:none; {% endif %}">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <div class="errors" style="display:inline;">
+                    {% for notify in notifications %}
+                        {{notify}} <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="container">
+    <ul class="nav nav-tabs" id="myTabs">
+        <li><a href="{% url 'profileApp:profile' %}">Profile</a></li>
+        <li><a href="{% url 'profileApp:schedule' %}">Schedule</a></li>
+        <li class="active"><a href="{% url 'profileApp:semesters' %}">Old Semesters</a></li>
+        <li><a href="{% url 'profileApp:sessions' %}">Sessions</a></li>
+        <li><a href="#">Messages</a></li>
+    </ul>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-6">
+                            Previous Semesters
+                        </div>
+                        <div class="col-md-6 text-right">
+                            Total GPA: 4.0
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    {% for semester in semesters %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                Semester #{{forloop.counter}}
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                GPA: {{semester.GPA}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="panel-body"> -->
+                                        <!-- ######################################### -->
+
+                                        <ul class="list-group">
+                                            {% for c_c in semester.completedcourse_set.all %}
+                                                <li class="list-group-item">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <a href="{% url 'coursesApp:view_course' c_c.course.id %}" class="sessionCourse">#{{c_c.course.code}} - {{c_c.course.name}}</a><br>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <b>Written: {{c_c.written_result}} / {{c_c.course.max_written_result}}</b>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <b>Oral: {{c_c.oral_result}} / {{c_c.course.max_oral_result}}</b>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <b>Applications: {{c_c.app_result}} / {{c_c.course.max_app_result}}</b>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+
+                                        <!-- ######################################### -->
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

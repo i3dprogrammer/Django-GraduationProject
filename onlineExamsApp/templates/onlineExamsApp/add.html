@@ -1,0 +1,218 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Add Quiz {% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{session.course.name}} - Add Quiz <div class="inline pull-right"></div></h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-offset-4 col-md-4">
+                    <font color="gray"><center><h2>Settings</h2></center></font>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal" action="" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Exam date</label>
+                            <div class="col-md-9">
+                                <input type="date" class="form-control" name="date"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Start time</label>
+                            <div class="col-md-9">
+                                <input type="time" class="form-control" name="time"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Duration (Minutes)</label>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" name="duration" placeholder="Quiz duration in minutes"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Quiz Grade</label>
+                            <div class="col-md-9">
+                                <input type="number" class="form-control" name="duration" placeholder="Max Quiz Grade"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-offset-4 col-md-4">
+                    <center>
+                        <font color="gray"><h2>Questions</h2></font>
+                        <label>Select the correct answer from each question.</label>
+                    </center>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <ol name="questions" id="questions">
+                        <li>
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label class="control-label"><input type="text" class="form-control" placeholder="Question 1"></label>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="close" onclick="deleteQuestion(event)">&times;</button>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled" id="question-answers-1" style="padding:5px;">
+                                <li style="padding-bottom: 5px;">
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <div class="radio">
+                                                <input type="radio" name="q1">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" placeholder="Answer 1" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="close" onclick="deleteAnswer(event)">&times;</button>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li style="padding-bottom: 5px;">
+                                    <div class="form-inline">
+                                        <div class="form-group">
+                                            <div class="radio">
+                                                <input type="radio" name="q1">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" placeholder="Answer 2" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="close" onclick="deleteAnswer(event)">&times;</button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <button class="btn btn-default" onclick="addQuestion()">Add new question <span class="glyphicon glyphicon-question-sign"></span></button>
+                        <button class="btn btn-default" onclick="addAnswer()">Add another answer <span class="glyphicon glyphicon-plus"></span></button>
+                        <button class="btn btn-default">Check exam</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_code %}
+
+<script>
+    var last_question_number = 1;
+    var last_answer_number = 2;
+    function addQuestion(){
+        last_answer_number = 2;
+        last_question_number += 1;
+        var question_li = `
+        <li>
+            <div class="form-inline">
+                <div class="form-group">
+                    <label class="control-label"><input type="text" class="form-control" placeholder="Question ` + last_question_number + `"></label>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="close" onclick="deleteQuestion(event)">&times;</button>
+                </div>
+            </div>
+            <ul class="list-unstyled" id="question-answers-` + last_question_number + `" style="padding:5px;">
+                <li style="padding-bottom: 5px;">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="radio">
+                                <input type="radio" name="q` + last_question_number + `">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Answer ` + (last_answer_number-1) + `" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="close" onclick="deleteAnswer(event)">&times;</button>
+                        </div>
+                    </div>
+                </li>
+                <li style="padding-bottom: 5px;">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <div class="radio">
+                                <input type="radio" name="q` + last_question_number + `">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Answer ` + (last_answer_number) + `" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="close" onclick="deleteAnswer(event)">&times;</button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </li>`;
+        var list = document.getElementById("questions");
+        $("#questions").append(question_li);
+    }
+    function addAnswer(){
+        last_answer_number += 1;
+        var answer_li = `                
+        <li style="padding-bottom: 5px;">
+            <div class="form-inline">
+                <div class="form-group">
+                    <div class="radio">
+                        <input type="radio" name="q` + last_question_number + `">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Answer ` + (last_answer_number) + `" class="form-control">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="close" onclick="deleteAnswer(event)">&times;</button>
+                </div>
+            </div>
+        </li>`;
+        var last_question = $("#questions").children().last();
+        var answers = last_question.children("ul");
+        answers.append(answer_li);
+    }
+    function deleteAnswer(e){
+        var answers = $(e.target).closest("ul");
+        var answers_count = answers.children('li').length;
+        console.log(answers_count);
+        if(answers_count > 2){
+            $(e.target).closest("li").remove();
+        }
+    }
+    function deleteQuestion(e){
+        var questions = $(e.target).closest('ol');
+        var questiosn_count = questions.children('li').length;
+        if (questiosn_count > 1){
+            $(e.target).closest("li").remove();
+        }
+    }
+</script>
+
+{% endblock %}

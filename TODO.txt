@@ -1,0 +1,41 @@
+> Student choose the courses he wants to take -> then the available lectures, sections, labs appear.
+[X] Location for the lecture/section/lab
+[X] A schedule(aka table) showing student week.
+> A guide for each student to check his schedule if it's ok or not.
+> Departments, courses required to enter specific department
+> Study plan, a plan for each semester of a student life to enter specific department.
+> Completed courses in the profile
+
+
+> TeData complaint number [40320572]
+
+secret > goodtogo
+CHECKS for GUID >> 1158	14.126537	192.168.1.6	104.28.21.86	HTTP	195	GET /guid/api/Do.php?Action=GUID&Game=10&GUID=4031839612 HTTP/1.1 
+
+New token >> aeHt81IVFn >> New Url >> http://guid.sinfulexp.net/api/Do2.php?Action=Token&Token=aeHt81IVFn&GUID=4031839612&CN=VISUALSTUDIO-PC
+Load Loader > [Full request URI: http://guid.sinfulexp.net/api/Do2.php?Action=Token&Token=Py5XvA1UkJ&GUID=4031839612&CN=VISUALSTUDIO-PC]
+Set GUID > 20	3.846155	192.168.1.6	104.28.21.86	HTTP	173	GET /api/Do2.php?Action=Token&Token=tRJmmPRKS&GUID=4031839612&CN=VISUALSTUDIO-PC HTTP/1.0 
+First Time run > 8	2.335522	192.168.1.6	104.28.21.86	HTTP	148	GET /api/Do.php?Action=LV&GUID=4031839612&Version=2.0.4 HTTP/1.0 
+H?44\\nsit|x44Yjru44 = C:\\Windows\\Temp
+
+Courses
+    undefined - Organic Chemistry [1] - Sunday - 12:00:00 -> 14:00:00
+	undefined - Physical Chemistry [B] - Thursday - 12:00:00 -> 14:00:00
+	undefined - Physical Optics - Thursday - 15:00:00 -> 17:00:00
+	undefined - Electromagnetic - Wednesday - 13:00:00 -> 15:00:00
+	undefined - Mechanics [2] - Monday - 09:00:00 -> 13:00:00
+	undefined - Mechanics [1] - Monday - 11:00:00 -> 13:00:00
+	undefined - Analytical Engineering [2] and Linear Algebra - Monday - 01:00:00 -> 04:00:00
+	undefined - Mathematical Analysis [2] - Wednesday - 09:00:00 -> 11:00:00
+	undefined - Human Rights - Sunday - 05:00:00 -> 06:00:00
+	undefined - English [1] - Sunday - 08:00:00 -> 09:00:00
+	undefined - Physical Chemistry [A] - Wednesday - 11:00:00 -> 13:00:00
+	undefined - Sound and Waves - Wednesday - 15:00:00 -> 17:00:00
+	undefined - Matter Properties and Heat - Tuesday - 13:00:00 -> 15:00:00
+	undefined - Analytical Engineering [1] and High Algebra - Thursday - 09:00:00 -> 12:00:00
+	undefined - Analytical Engineering [1] and High Algebra - Sunday - 09:00:00 -> 12:00:00
+	undefined - Mathematical Analysis [1] - Saturday - 09:00:00 -> 11:00:00
+	undefined - Inorganic chemistry [1] - Saturday - 11:00:00 -> 13:00:00
+	undefined - Inorganic chemistry [1] - Saturday - 09:00:00 -> 11:00:00
+	
+	

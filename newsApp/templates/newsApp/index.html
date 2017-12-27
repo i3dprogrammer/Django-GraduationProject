@@ -1,0 +1,36 @@
+<h1>News</h1>
+{% if latest_news %}
+	<ul>
+		{% for news in latest_news %}
+			<li>
+				<a href="{% url 'newsApp:newsArticle' news.id %}">{{ news.news_title }}</a>
+				<div style="margin:8px;">
+					<script>
+						document.write(("{{news.news_desc}}").substring(0, 100));
+						{% if news.news_desc|length > 100 %}
+							document.write("...");
+						{% endif %}
+					</script>
+					{% if has_perm %}
+						<a href="{% url 'newsApp:editNews' news.id %}">Edit</a>
+						<a href="{% url 'newsApp:deleteNews' news.id %}">Delete</a>
+					{% endif %}
+				</div>
+			</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<p>No news available</p>
+{% endif %}
+
+{% if prev_page %}
+	<a href="{% url 'newsApp:NewsPage' prev_page %}">Previous</a>
+{% endif %}
+
+{% if next_page %}
+	<a href="{% url 'newsApp:NewsPage' next_page %}">Next</a>
+{% endif %}
+
+{% if has_perm %}
+	<a href="{% url 'newsApp:addNews' %}">Add news</a>
+{% endif %}

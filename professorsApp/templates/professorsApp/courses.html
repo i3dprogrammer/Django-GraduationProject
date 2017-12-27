@@ -1,0 +1,22 @@
+<h1>Courses</h1>
+<ul>
+{% for course in latest %}
+		<a href="{% url 'professorsApp:viewCourse' course.id%}">{{ course.name }}</a> 
+		<div style="margin:8px;">
+			<script>
+				document.write(("{{course.info}}").substring(0, 100));
+				{% if prof.info|length > 100 %}
+					document.write("...");
+				{% endif %}
+			</script>
+		</div>
+{% endfor %}
+</ul>
+
+{% if prev_page %}
+	<a href="{% url 'professorsApp:coursePage' prev_page %}">Previous</a>
+{% endif %}
+
+{% if next_page %}
+	<a href="{% url 'professorsApp:coursePage' next_page %}">Next</a>
+{% endif %}

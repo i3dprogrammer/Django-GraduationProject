@@ -1,0 +1,59 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{user.first_name}} {{user.last_name}} Sessions {% endblock %}
+{% block profileActive %} active {% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning" role="alert" style="margin:10px;{% if not notifications %} display:none; {% endif %}">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <div class="errors" style="display:inline;">
+                {% for notify in notifications %}
+                    {{notify}} <br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if professor %}
+<div class="container">
+    <ul class="nav nav-tabs" id="myTabs">
+        <li><a href="{% url 'profileApp:profile' %}">Profile</a></li>
+        <li><a href="{% url 'profileApp:schedule' %}">Schedule</a></li>
+        <li class="active"><a href="{% url 'profileApp:sessions' %}">Sessions</a></li>
+    </ul>
+    <div class="list-group">
+        {% for session in professor.session_set.all %}
+            <a href="{% url 'quizesApp:view' session.id%}" class="list-group-item">{{session.course.name}}</a>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="container">
+    <ul class="nav nav-tabs" id="myTabs">
+        <li><a href="{% url 'profileApp:profile' %}">Profile</a></li>
+        <li><a href="{% url 'profileApp:schedule' %}">Schedule</a></li>
+        <li><a href="{% url 'profileApp:semesters' %}">Old Semesters</a></li>
+        <li class="active"><a href="{% url 'profileApp:sessions' %}">Sessions</a></li>
+        <li><a href="#">Messages</a></li>
+    </ul>
+    <div class="list-group">
+        {% for session in student.sessions.all %}
+            {% if session.professor %}
+                <a href="{% url 'quizesApp:view' session.id %}" class="list-group-item">
+                    {{session.course.name}} - {{session.get_dayOfWeek_display}} - <b>{{session.professor}}</b>
+                </a>
+            {% else %}
+                <a href="#" class="list-group-item disabled">
+                    {{session.course.name}} - {{session.get_dayOfWeek_display}} - <b>Not available.</b>
+                </a>
+            {% endif %}
+        {% empty %}
+            <a class="list-group-item">You don't have any sessions.</a>
+        {% endfor %}
+    </div>
+</div>
+
+{%endif%}
+{% endblock %}

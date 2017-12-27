@@ -1,0 +1,23 @@
+<div style="margin:15px;">
+{% if news %}
+	<table>
+		<td>
+			<h1>
+				{{news.news_title}}
+			</h1>
+		</td>
+		<td>
+			{% if has_perm %}
+				<a href="{% url 'newsApp:editNews' news.id %}">Edit</a>
+				<a href="{% url 'newsApp:deleteNews' news.id %}">Delete</a>
+			{% endif %}
+		</td>
+	</table>
+	<small style="color:gray;">Published by {{news.user.first_name}} {{news.user.last_name}} on {{news.news_date}}</small>
+	<div style="margin:15px">
+		{{news.news_desc}}
+	</div>
+{% else %}
+	<p>There's no article with such ID</p>
+{% endif %}
+</div>

@@ -1,0 +1,122 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Manage year sessions {% endblock %}
+{% block content %}
+
+{% load index %}
+
+<div class="container">
+    <div class="errors">
+
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{session.course.name}} <div class="inline pull-right">{{session.startTime|time:"h:i A"}} - {{session.endTime|time:"h:i A"}}</div></h1>
+            <h1>
+                <small style="color:gray;">
+                    {% if not has_perm %}
+                        Professor: <a href="{% url 'professorsApp:viewProf' session.professor.id %}">{{session.professor}}</a>
+                    {% else %}
+                        Total Students: <span>{{session.studentinfo_set.count}}</span>
+                    {% endif %}
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="myTabs">
+        <li><a href="{% url 'quizesApp:view' session.id %}">Quizes</a></li>
+        <li class="active"><a href="{% url 'profileApp:schedule' %}">Lecture Files</a></li>
+    </ul>
+
+    <div class="list-group">
+        {% for lec in lectures %}
+            <a class="list-group-item">
+                <div class="row pgRow">
+                    <div class="col-md-6">
+                        <b>{{lec.name}}</b>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pull-right">
+                            <button onclick="location.href='{{lec.file.url}}'" class="btn btn-default"><b>Download</b> {{lec.file.size|filesizeformat}} <span class="glyphicon glyphicon-download-alt"></span></button>
+                            {% if has_perm %}
+                                <button onclick="location.href='{% url 'lecturesApp:delete' lec.id %}'" class="btn btn-default"><b>Delete</b> <span class="glyphicon glyphicon-trash"/></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <a class="list-group-item">There's no lectures available at the moment.</a>
+        {% endfor %}
+    </div>
+    {% if has_perm %}
+        <div class="pull-right">
+            <button onclick="location.href='{% url 'sessionManagerApp:view' session.id %}'" class="btn btn-default"><b>View Session Students</b> <span class="glyphicon glyphicon-th-list"/></button>
+            <button class="btn btn-default" data-toggle="modal" data-target="#myModal"><b>Add new lecture files</b> <span class="glyphicon glyphicon-edit"/></button>
+        </div>
+    {% endif %}
+
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Add new lecture to {{session.course.name}}</h4>
+            </div>
+            <div class="modal-body">
+            <form id="add_lecture_form" method="POST" action="" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Lecture name: </label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="name"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Lecture file: </label>
+                    <div class="col-md-8">
+                        <label class="btn btn-default">
+                            Upload file <span class="glyphicon glyphicon-upload"></span>
+                            <input id="file-selector" name="file" type="file" class="form-control" style="display:none;" onchange="$('#upload-file-info').html(this.files[0].name)"/>
+                        </label>
+                        <span class='label label-success' id="upload-file-info"></span><br/>
+                        <span class='label label-danger' id="upload-file-error"></span>
+                        <p class="help-block">
+                            Max file size: 10 MB.
+                        </p>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="submit_btn" class="btn btn-primary disabled" onclick="">Add Lecture</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js_code %}
+<script>
+    var allowed_extensions = []
+    $('#file-selector').change(function(){
+        var fileSize = this.files[0].size/1024/1024;
+        if(fileSize > 10) //Max file size HERE. TODO make it a value in settings.
+        {
+            $("#upload-file-error").text("File exceeded the maximum size.");
+            document.getElementById("submit_btn").setAttribute("onclick", "")
+            document.getElementById("submit_btn").classList.add("disabled");
+
+        } else {
+            $("#upload-file-error").text("");
+            document.getElementById("submit_btn").setAttribute("onclick", "$('#add_lecture_form').submit()")
+            document.getElementById("submit_btn").classList.remove("disabled");
+        }
+    });
+</script>
+{% endblock %}

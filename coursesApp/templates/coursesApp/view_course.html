@@ -1,0 +1,46 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{course.name}} Course {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h1>#{{course.code}} - {{course.name}}{% if course.elective %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</h1>
+                        <h1><small style="color:gray;">{{course.group}}</small></h1>
+                    </div>
+                    <div class="col-md-2 pull-right text-bottom">
+                        {% if completed %}<h1><span class="label label-success">Completed</span></h1>{%endif%}
+                    </div>
+                </div>
+                <hr/>
+                    <h4>{{course.info}}</h4>
+                <hr/>
+                <table class="table table-bordered table-striped table-condensed text-center">
+                    <tr>
+                        <td>Duration</td>
+                        <td>Practical duration</td>
+                        <td>Theoretical</td>
+                        <td>Oral</td>
+                        <td>Practical</td>
+                        <td>Prerequisites</td>
+                    </tr>
+                    <tr>
+                        <td>{{course.duration|time:"h:i"}}</td>
+                        <td>{{course.applications_duration|time:"h:i"}}</td>
+                        <td>{{course.max_written_result}}</td>
+                        <td>{{course.max_oral_result}}</td>
+                        <td>{{course.max_app_result}}</td>
+                        <td>
+                            <div class="text-left">
+                                {% for pre in course.prequels.all %}
+                                    <a href="{% url 'coursesApp:view_course' pre.id %}">{{pre.name}}.</a><br/>
+                                {% endfor %}
+                            </div> 
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

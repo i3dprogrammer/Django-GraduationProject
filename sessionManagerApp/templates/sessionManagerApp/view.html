@@ -1,0 +1,29 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{session.course.name}} Students {% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{session.course.name}} <div class="inline pull-right">{{session.startTime|time:"h:i A"}} - {{session.endTime|time:"h:i A"}}</div></h1>
+            <h1>
+                <small style="color:gray;">
+                    Total Students: <span>{{session.studentinfo_set.count}}</span>
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="list-group">
+                {% for student in session.studentinfo_set.all %}
+                    <a class="list-group-item"><b>{{student.full_name}}</b></a>
+                {% empty %}
+                    <a class="list-group-item">No one registered this course.</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

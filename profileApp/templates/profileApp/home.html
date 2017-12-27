@@ -1,0 +1,104 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{user.first_name}} {{user.last_name}} Profile {% endblock %}
+{% block profileActive %} active {% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning" role="alert" style="margin:10px;{% if not notifications %} display:none; {% endif %}">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <div class="errors" style="display:inline;">
+                {% for notify in notifications %}
+                    {{notify}} <br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if professor %}
+<div class="container">
+    <ul class="nav nav-tabs" id="myTabs">
+        <li class="active"><a href="{% url 'profileApp:profile' %}">Profile</a></li>
+        <li><a href="{% url 'profileApp:schedule' %}">Schedule</a></li>
+        <li><a href="{% url 'profileApp:sessions' %}">Sessions</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-md-12">
+            <h1><b>{{professor.name}}</b></h1>
+            <h1>
+                <small style="color:gray;">
+                    <!-- Quick info here.. -->
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{professor.info|linebreaks}}</h3>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<div class="container">
+    <ul class="nav nav-tabs" id="myTabs">
+        <ul class="nav nav-tabs" id="myTabs">
+            <li class="active"><a href="{% url 'profileApp:profile' %}">Profile</a></li>
+            <li><a href="{% url 'profileApp:schedule' %}">Schedule</a></li>
+            <li><a href="{% url 'profileApp:semesters' %}">Old Semesters</a></li>
+            <li><a href="{% url 'profileApp:sessions' %}">Sessions</a></li>
+            <li><a href="#">Messages</a></li>
+        </ul>
+    </ul>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="profile">
+                    <table class="table table-condensed">
+                        <tr>
+                            <td width=150>ID</td><td>{{student.college_id}}</td>
+                        </tr>
+                        <tr>
+                            <td>Name</td><td>{{student.full_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>Year</td><td>{{student.year}}</td>
+                        </tr>
+                        <tr>
+                            <td>Departments</td><td>{{student.group}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--     <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Communication courses available # TODO
+                </div>
+                <div class="list-group">
+                    {% for session in student.sessions.all %}
+                        {% if session.professor %}
+                            <a href="{% url 'quizesApp:view' session.id %}" class="list-group-item">
+                                <b>{{session.course}} - {{session.get_dayOfWeek_display}} by {{session.professor}}</b>
+                            </a>
+                        {% else %}
+                            <a href="#" class="list-group-item disabled">
+                                {{session.course}} - {{session.get_dayOfWeek_display}}. <b>Not available.</b>
+                            </a>
+                        {% endif %}
+                    {% empty %}
+                        <a class="list-group-item">You don't have any sessions.</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+{%endif%}
+{% endblock %}

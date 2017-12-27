@@ -1,0 +1,230 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Quizes {% endblock %}
+{% block content %}
+
+{% load index %}
+
+<div class="alert alert-danger hidden">
+    <strong>Error!</strong> 
+    <div class="errors inline">
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{session.course.name}} <div class="inline pull-right">{{session.startTime|time:"h:i A"}} - {{session.endTime|time:"h:i A"}}</div></h1>
+            <h1>
+                <small style="color:gray;">
+                    {% if not prof %}
+                        Professor: <a href="{% url 'professorsApp:viewProf' session.professor.id %}">{{session.professor}}</a>
+                    {% else %}
+                        Total Students: <span>{{session.studentinfo_set.count}}</span>
+                    {% endif %}
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="myTabs">
+        <li class="active"><a href="{% url 'quizesApp:view' session.id %}">Quizes</a></li>
+        <li><a href="{% url 'lecturesApp:view' session.id %}">Lecture Files</a></li>
+    </ul>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="list-group">
+                {% for quiz in quizes %}
+                    {% if not prof %}
+                        <a class="list-group-item 
+                            {% if quizes_grades|index:forloop.counter0 != '???' %}
+                                list-group-item-success
+                            {%endif%}
+                            {% if quizes_grades|index:forloop.counter0 == '---' %}
+                                list-group-item-warning
+                            {% endif %}
+                            {% if quizes_grades|index:forloop.counter0 == 'Ended' %}
+                                list-group-item-danger
+                            {% endif %}
+                            ">
+                            <div class="row pgRow">
+                                <div class="col-md-3">
+                                    <b>Deadline</b> <span class="date">{{quiz.deadline|date:"M. d, Y, "}}</span> <span class="time">{{quiz.deadline|time:"h:i A"}}</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <b>Grade</b> <span class="grade"> {{quizes_grades|index:forloop.counter0}} / {{quiz.max_grade}}</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <span class="status">
+                                        {% if quizes_grades|index:forloop.counter0 == '???' %}
+                                            <b>Not answered.</b>
+                                        {% elif quizes_grades|index:forloop.counter0 == '---' %}
+                                            <b>Reviewing answer.</b>
+                                        {% elif quizes_grades|index:forloop.counter0 == 'Ended' %}
+                                            <b>Deadline ended.</b>
+                                        {% else %}
+                                            <b>Answer Marked.</b>
+                                        {%endif%}
+                                    </span>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="pull-right">
+                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Quiz</b> <span class="glyphicon glyphicon-download-alt"/></button>
+                                        {% if quizes_grades|index:forloop.counter0 == '???' %}
+                                            <form id="form" method="POST" action="" class="inline" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <label class="btn btn-default"><b>Upload Answer</b> <span class="glyphicon glyphicon-upload"/><input accept=".jpg, .jpeg, .png, .doc, .docx, .pdf" id="file" name='file' type="file" style="display:none;"></label>
+                                                <input type=hidden name='quiz_id' value="{{quiz.id}}">
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% else %}
+                        <a class='list-group-item {% if colors|index:forloop.counter0 %}list-group-item-danger{%endif%}'>
+                            <div class="row pgRow">
+                                <div class="col-md-3">
+                                    <b>Deadline</b> <span class="date">{{quiz.deadline|date:"M. d, Y, "}}</span> <span class="time">{{quiz.deadline|time:"h:i A"}}</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <b>Max Grade</b> <span class="grade"> {{quiz.max_grade}}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <b>Status</b> 
+                                    <span class="grade">
+                                        {% if colors|index:forloop.counter0 %}
+                                            Ended
+                                        {% else %}
+                                            Running
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-right">
+                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Quiz</b> <span class="glyphicon glyphicon-download-alt"/></button>
+                                        <button class="btn btn-default" onclick="location.href='{% url 'quizesApp:delete' quiz.id %}'"><b>Delete</b> <span class="glyphicon glyphicon-trash"/></button>
+                                        <button class="btn btn-default" onclick="location.href='{% url 'quizesApp:results' quiz.id %}'"><b>Results</b> <span class="glyphicon glyphicon-signal"/></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% empty %}
+                    <a class="list-group-item">There's no quizes right now.</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="pull-right">
+                {% if prof %}
+                    <button onclick="location.href='{% url 'sessionManagerApp:view' session.id %}'" class="btn btn-default"><b>View Session Students</b> <span class="glyphicon glyphicon-th-list"/></button>
+                    <button class="btn btn-default" data-toggle="modal" data-target="#myModal"><b>Add new quiz</b> <span class="glyphicon glyphicon-edit"/></button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">Add new quiz to {{session.course.name}}</h4>
+            </div>
+            <div class="modal-body">
+            <form id="add_quiz_form" method="POST" action="" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Deadline date: </label>
+                    <div class="col-md-8">
+                        <input type="date" class="form-control" name="date"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Deadline time: </label>
+                    <div class="col-md-8">
+                        <input type="time" class="form-control" name="time" value="13:00"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Grade: </label>
+                    <div class="col-md-8">
+                        <input type="number" min="1" max="100" class="form-control" name="max_grade"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Quiz file: </label>
+                    <div class="col-md-8">
+                        <label class="btn btn-default">
+                            Upload file <span class="glyphicon glyphicon-upload"></span>
+                            <input id="file-selector" name="quiz_file" type="file" class="form-control" accept=".jpg, .jpeg, .png, .doc, .docx, .pdf" style="display:none;" onchange="$('#upload-file-info').html(this.files[0].name)"/>
+                        </label>
+                        <span class='label label-success' id="upload-file-info"></span><br/>
+                        <span class='label label-danger' id="upload-file-error"></span>
+                        <p class="help-block">
+                            Allowed extensions: doc, docx, jpg, jpeg, png and pdf. <br> Max file size: 8 MB.
+                        </p>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="submit_btn" onclick="$('#add_quiz_form').submit()">Add Quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+{% endblock %}
+
+
+{% block js_code %}
+<script>
+
+var allowed_extensions = ["doc", "docx", "jpg", "jpeg", "png", "pdf"];
+var user_max_quiz_filesize = 8;
+var prof_max_quiz_filesize = 8;
+
+if(document.getElementById('file')){
+    document.getElementById("file").onchange = function() {
+        var fileSize = this.files[0].size/1024/1024;
+        var fileExtension = this.files[0].name.split('.').pop();
+        if(fileSize <= user_max_quiz_filesize && allowed_extensions.indexOf(fileExtension) != -1) //Max file size HERE. TODO make it a value in settings.
+        {
+            document.getElementById("form").submit();
+        } else {
+            document.getElementsByClassName("alert")[0].setAttribute("class", "alert alert-danger")
+            document.getElementsByClassName("errors")[0].innerHTML = "File exceeded the maximum size " + user_max_quiz_filesize + "MB. Or it's not allowed.";
+        }
+        
+    };
+}
+
+// Professor upload.
+if(document.getElementById('file-selector')){
+    document.getElementById("file-selector").onchange = function() {
+        var fileSize = this.files[0].size/1024/1024;
+        var fileExtension = this.files[0].name.split('.').pop();
+        if(fileSize <= prof_max_quiz_filesize && allowed_extensions.indexOf(fileExtension) != -1) //Max file size HERE. TODO make it a value in settings.
+        {
+            $("#upload-file-error").text("");
+            document.getElementById("submit_btn").setAttribute("onclick", "$('#add_quiz_form').submit()")
+            document.getElementById("submit_btn").classList.remove("disabled");
+        } else {
+            $("#upload-file-error").text("File exceeded the maximum size. Or it's not allowed.");
+            document.getElementById("submit_btn").setAttribute("onclick", "")
+            document.getElementById("submit_btn").classList.add("disabled");
+        }
+    };
+}
+$('#file-selector').change(function(){
+
+});
+</script>
+{%  endblock %}

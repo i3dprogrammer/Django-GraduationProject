@@ -1,0 +1,333 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Manage year sessions {% endblock %}
+{% block manageActive %} active {% endblock %}
+{% block content %}
+{% if allowed_groups %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Choose your department!</h1>
+			<h4>
+				<ul>
+					<li>Choose the department you want to enter.</li>
+					<li>Please think thoroughly first, this is not reversable.</li>
+					<li>Click next after choosing your department.</li>
+				</ul>
+			</h4> <br/>
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+					<form method="POST" action="">
+						{%csrf_token%}
+						<h3>Your current department: {{curr_group}}</h3>
+						<div class="row">
+							<div class="col-md-10">
+								<div class="input-group">
+									<span class="input-group-addon">Department</span>
+									<select class="form-control" name="selectedDepartment">
+										{% for group in allowed_groups %}
+											<option>{{group.name}}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="col-md-2">
+								<button class="btn btn-default btn-block" id="saveButton" type="submit">Next</button>
+							</div>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% else %}
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Select semester courses!</h1>
+			<h4>
+				<ul>
+					<li>Select the courses you want to take each week this semester.</li>
+					<li>You must select {{minHoursWeek}} hours/week at least to save your changes. With a maximum of {{maxHoursWeek}} hours/week.</li>
+					<li>If you want to enter a specific department check the study plan you should follow enter that department <a href="#"> Here. </a></li>
+					<li>Courses that require prerequisites you don't have, aren't available.</li>
+					<li>Courses you completed aren't available.</li>
+				</ul>
+			</h4>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Choose courses
+					</div>
+					<div class="alert alert-danger" role="alert" style="margin:10px;{% if not errorList %} display:none; {% endif %}">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<div class="errors" style="display:inline;">
+							{% for error in errorList %}
+								{{error}} <br>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										Filter available courses
+									</div>
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-3">
+												<div class="form-group">
+													<div class="input-group">
+														<span class="input-group-addon">Day</span>
+														<select class="form-control" id="filterDay" onchange="applyFilters();">
+															<option value="0">None</option>
+															<option value="1">Saturday</option>
+															<option value="2">Sunday</option>
+															<option value="3">Monday</option>
+															<option value="4">Tuesday</option>
+															<option value="5">Wednesday</option>
+															<option value="6">Thursday</option>
+															<option value="7">Friday</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-5">
+												<div class="form-group">
+													<div class="input-group">
+														<span class="input-group-addon">Course</span>
+														<select class="form-control" id="filterCourse" onchange="applyFilters()">
+															<option value="0">None</option>
+															{% for course in allCourses %}
+																<option value="{{forloop.counter}}">{{course.name}}</option>
+															{% endfor %}
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-2">
+												<button class="btn btn-default" onclick="applyFilters(1)">Reset filters</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										Available courses {{allSessions.count}}
+									</div>
+									<div class="panel-body">
+										<ul class="list-group allList">
+										{% for session in allSessions %}
+											<li class="list-group-item selectable">
+												<input type="hidden" value="{{session.id}}" name="selectedCourses" />
+												<div class="row">
+													<div class="col-md-4">
+														<a href="{% url 'coursesApp:view_course' session.course.id %}" target="_blank" class="sessionCourse">{{session.course.name}}</a><br>
+														<small style="color:gray">By 
+															{% if session.professor %}
+																<a href="{% url 'professorsApp:viewProf' session.professor.id %}" target="_blank">{{session.professor}}</a> 
+															{% else %}
+																Undefined
+															{% endif %}
+														</small> <br>
+														<small style="color:gray"><div class="sessionDuration inline" >{{session.course.duration.hour}}</div> hour{% if session.course.duration.hour > 1 %}s{% endif %} on <div class="sessionDay inline">{{session.get_dayOfWeek_display}}</div></small>
+													</div>
+													<div class="col-md-8 text-center">
+														<div class="row">
+															<div class="col-md-6">
+																<h2>{{session.startTime|time:"h:i A"}}</h2>
+															</div>
+															<div class="col-md-6">
+																<h2>{{session.endTime|time:"h:i A"}}</h2>
+															</div>
+														</div>
+													</div>
+												</div>
+											</li>
+										{% endfor %}
+										</ul>
+									</div>
+								</div>
+								<br/><br/>
+							</div>
+							<div class="col-md-6">
+								<form method="post" action="">
+									{% csrf_token %}
+									<div class="panel panel-primary">
+										<div class="panel-heading">
+											<div class="row">
+												<div class="col-md-6">
+													Your courses
+												</div>
+												<div class="col-md-6 text-right coursesCount">
+													{{userTotalHours}} hour{% if userTotalHours > 1%}s{%endif%}
+												</div>
+											</div>
+										</div>
+										<div class="panel-body">
+											<ul class="list-group userList">
+											{% for session in userSessions %}
+												<li class="list-group-item selectable">
+													<input type="hidden" value="{{session.id}}" name="selectedCourses" />
+													<div class="row">
+														<div class="col-md-4">
+															<a href="{% url 'coursesApp:view_course' session.course.id %}" target="_blank" class="sessionCourse">{{session.course.name}}</a><br>
+															<small style="color:gray">By 
+																{% if session.professor %}
+																	<a href="{% url 'professorsApp:viewProf' session.professor.id %}" target="_blank">{{session.professor}}</a> 
+																{% else %}
+																	Undefined
+																{% endif %}
+															</small> <br>
+															<small style="color:gray"><div class="sessionDuration inline" >{{session.course.duration.hour}}</div> hour{% if session.course.duration.hour > 1 %}s{% endif %} on <div class="sessionDay inline">{{session.get_dayOfWeek_display}}</div></small>
+														</div>
+														<div class="col-md-8 text-center">
+															<div class="row">
+																<div class="col-md-6">
+																	<h2>{{session.startTime|time:"h:i A"}}</h2>
+																</div>
+																<div class="col-md-6">
+																	<h2>{{session.endTime|time:"h:i A"}}</h2>
+																</div>
+															</div>
+														</div>
+													</div>
+												</li>
+											{% endfor %}
+											</ul>
+										</div>
+									</div>
+									<button class="btn btn-primary pull-right" id="saveButton" type="submit">Save</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+{% endblock %}
+
+{% block js_code %}
+<script> 
+	//TODO: Make this a seperate file :D
+	$('li').click(function(){
+		elem = $(this)[0];
+		if (elem.getAttribute('class').indexOf("list-group-item") != '-1')
+		{
+			if (elem.parentNode.getAttribute('class').indexOf('allList') == '-1')
+				document.getElementsByClassName('allList')[0].appendChild(elem);
+			else
+				document.getElementsByClassName('userList')[0].appendChild(elem);
+				
+			checkScrollbar();
+			applyFilters();
+			checkHours(updateHours());
+
+			//TODO fix scrolling 
+			//window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+		};
+	});
+	
+	function checkScrollbar(){
+		if ($('.allList').children().length > 5)
+			$('.allList').attr("class", "list-group allList divWithScroll")
+		else
+			$('.allList').attr("class", "list-group allList")
+
+		if ($('.userList').children().length > 5)
+			$('.userList').attr("class", "list-group userList divWithScroll")
+		else
+			$('.userList').attr("class", "list-group userList")  
+	}
+	
+	function updateHours(){
+		var hours = 0;
+		var els = $('.userList .sessionDuration');
+		for(var i=0;i<els.length;i++)
+			hours += parseInt(els[i].innerText);
+		if(hours <= 1)
+			$('.coursesCount')[0].innerText = hours + " hour";
+		else
+			$('.coursesCount')[0].innerText = hours + " hours";	
+			
+		return hours;
+	}
+	
+	function checkHours(hours){
+		return;
+		if (hours < {{minHoursWeek}} || hours > {{maxHoursWeek}}) //TODO: Assign the correct value here.
+		{
+			$('.errors')[0].innerText = "You cannot save because your weekly hours doesn't meet the requirements: Minimum hours/week = {{minHoursWeek}}, Maximmum hours/week = {{maxHoursWeek}}";
+			$('.alert-danger').attr('style', 'margin:10px;');
+			/* $('#saveButton').attr('class', 'btn btn-primary pull-right disabled'); */
+		}
+		else {
+			$('.errors')[0].innerText = "";
+			$('.alert-danger').attr('style', 'margin:10px;display:none;');
+			/* $('#saveButton').attr('class', 'btn btn-primary pull-right'); */
+		}
+	}
+	
+	function filter(selection, filterSelector){
+		var els = $(filterSelector);
+		for(var i=0;i<els.length;i++)
+		{
+			if(selection.value == '0'){
+				els[i].closest("li").setAttribute("id", "");
+				continue;
+			}
+				
+			if(els[i].innerText != selection.innerText){
+				els[i].closest("li").setAttribute("id", "hidden");
+			} else {
+				els[i].closest("li").setAttribute("id", "");
+			}
+		}
+	}
+
+	
+	function applyFilters(reset){
+		var daySelect = document.getElementById("filterDay");
+		var courseSelect = document.getElementById("filterCourse");
+		
+		if(reset)
+		{
+			daySelect.selectedIndex = 0;
+			courseSelect.selectedIndex = 0;
+		}
+		
+		var courseSelection = courseSelect.options[courseSelect.selectedIndex];
+		var daySelection = daySelect.options[daySelect.selectedIndex];
+				
+		if(courseSelection.value == '0')
+			filter(daySelection, '.allList .sessionDay');
+		else if(daySelection.value == '0')
+			filter(courseSelection, '.allList .sessionCourse');
+		else {
+			var els = $('.allList .list-group-item');
+			for(var i=0;i<els.length;i++){
+				var elDay = $('.allList .sessionDay')[i];
+				var elCourse = $('.allList .sessionCourse')[i];
+				if(elDay.innerText ==  daySelection.innerText && elCourse.innerText == courseSelection.innerText)
+					elDay.closest("li").setAttribute("id", "");
+				else
+					elDay.closest("li").setAttribute("id", "hidden");
+			}
+		}
+	}	
+
+	$(function(){
+		checkScrollbar();
+	});
+</script>
+{% endblock %}

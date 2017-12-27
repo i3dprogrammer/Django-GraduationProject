@@ -1,0 +1,69 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Courses List {% endblock %}
+{% block coursesActive %} active {% endblock %} <!-- Should probably check in the header if .... is sent in context > make it active -->
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Courses List</h1>
+        <h4>
+            <ul>
+                <li>Here're full list of the courses that are available in HU Faculty of Science.</li>
+                <li>Courses you've completed are marked in green.</li>
+                <li>Courses that aren't available to you are marked in red.</li>
+                <li>Marked <span class="glyphicon glyphicon-ok"></span> courses are elective.</li>
+            </ul>
+        </h4>
+    </div>
+</div>
+<div class="container">
+    {% for course_group in courses_groups %}
+        {% if course_group.courses %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">{{course_group.group}} Department</div>
+                    <table class="table table-bordered table-striped table-condensed text-center">
+                        <tr>
+                            <td>Code</td>
+                            <td>Course name</td>
+                            <td>Duration</td>
+                            <td>Practical duration</td>
+                            <td>Theoretical</td>
+                            <td>Oral</td>
+                            <td>Practical</td>
+                            <td>Prerequisites</td>
+                        </tr>
+                        {% for course in course_group.courses %}
+                            <tr class="
+                                {% if course.name in denied_courses %} danger {% endif %}
+                                {% if course.name in user_completed_courses %} success {% endif %}
+                            ">
+                                <td><a href="{% url 'coursesApp:view_course' course.id %}">{{course.code}}</a></td>
+                                <td>
+                                    {{course.name}}
+                                    {% if course.elective %}
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {% endif %}
+                                </td>
+                                <td>{{course.duration|time:"h:i"}}</td>
+                                <td>{{course.applications_duration|time:"h:i"}}</td>
+                                <td>{{course.max_written_result}}</td>
+                                <td>{{course.max_oral_result}}</td>
+                                <td>{{course.max_app_result}}</td>
+                                <td>
+                                    <div class="text-left">
+                                        {% for pre in course.prequels.all %}
+                                            <a href="{% url 'coursesApp:view_course' course.id %}">{{pre.name}}.</a><br/>
+                                        {% endfor %}
+                                    </div> 
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        {%endif%}
+    {% endfor %}
+</div> 
+{% endblock %}

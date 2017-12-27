@@ -1,0 +1,20 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Departments List {% endblock %}
+{% block departmentsActive %} active {% endblock %} <!-- Should probably check in the header if .... is sent in context > make it active -->
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Departments List</h1>
+        <h4>
+            <ul>
+                <li>Here're full list of the departments that are available in HU Faculty of Science.</li>
+            </ul>
+        </h4>
+    </div>
+</div>
+<div class="container">
+    {% autoescape off %}
+        {{var|unordered_list}}
+    {% endautoescape %}
+</div>
+{% endblock %}

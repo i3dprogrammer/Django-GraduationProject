@@ -1,0 +1,62 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} Add new online exam {% endblock %}
+{% block content %}
+
+<font size="4">
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{session.course.name}} - Online Exam <div class="inline pull-right"></div></h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="jumbotron">
+        <h2>Notice</h2>
+        <ul class="">
+            <li>You're not allowed to cheat in any way.</li>
+            <li>You're being recorded the whole exam session.</li>
+            <li>You're not allowed to change the window during the exam, and if you did you will be disqualified.</li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-offset-4 col-md-4">
+                    <font color="gray"><center><h2>Time left</h2></center></font>
+                    <center><small style="color:gray;"><h2>00:42:50</h2></small></center>
+                    <hr/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <ol>
+                        <li>
+                            <label class="control-label">Question 1</label>
+                            <ul class="list-unstyled">
+                                <li><input type="radio" name="q1"/> Answer 1</li>
+                                <li><input type="radio" name="q1"/> Answer 2</li>
+                                <li><input type="radio" name="q1"/> Answer 3</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label class="control-label">Question 2</label>
+                            <ul class="list-unstyled">
+                                <li><input type="radio" name="q2"/> Answer 1</li>
+                                <li><input type="radio" name="q2"/> Answer 2</li>
+                                <li><input type="radio" name="q2"/> Answer 3</li>
+                                <li><input type="radio" name="q2"/> Answer 4</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-default btn-block"><b>Submit</b></button>
+                    <hr/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

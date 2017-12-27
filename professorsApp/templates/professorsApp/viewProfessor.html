@@ -1,0 +1,22 @@
+{% extends "sessionManagerApp/header.html" %}
+{% block title %} {{professor.name}} Profile {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1><b>{{professor.name}}</b></h1>
+            <h1>
+                <small style="color:gray;">
+                    <!-- Quick info here.. -->
+                </small>
+            </h1>
+            <hr/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>{{professor.info|linebreaks}}</h3>
+        </div>
+    </div>
+</div>
+{% endblock %}

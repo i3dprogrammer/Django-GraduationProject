@@ -1,0 +1,22 @@
+<h1>Events</h1>
+<ul>
+{% for event in latest %}
+	<a href="{% url 'eventsApp:viewEvent' event.id%}">{{ event.name }}</a> 
+	<div style="margin:8px;">
+		<script>
+			document.write(("{{event.info}}").substring(0, 100));
+			{% if event.info|length > 100 %}
+				document.write("...");
+			{% endif %}
+		</script>
+	</div>
+{% endfor %}
+</ul>
+
+{% if prev_page %}
+	<a href="{% url 'eventsApp:homePage' prev_page %}">Previous</a>
+{% endif %}
+
+{% if next_page %}
+	<a href="{% url 'eventsApp:homePage' next_page %}">Next</a>
+{% endif %}
