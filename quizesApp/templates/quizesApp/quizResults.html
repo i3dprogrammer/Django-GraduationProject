@@ -1,10 +1,10 @@
-{% extends "sessionManagerApp/header.html" %}
+{% extends "layout.html" %}
 {% block title %} Quiz results {% endblock %}
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1><b>{{quiz.session.course.name}} - Quiz results</b></h1>
+            <h1>{{quiz.session.course.name}} - Quiz results</h1>
             <h1>
                 <small style="color:gray;">
                     <div class="inline pull-right"><b>Deadline</b> {{quiz.deadline}} </div>

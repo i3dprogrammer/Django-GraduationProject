@@ -52,7 +52,7 @@ class ManageSessionsView(View):
 		if not request.user.is_authenticated:
 			return redirect(login_redirect_url)
 		if not Setting.objects.first().canChangeSessions:
-			return render(request, 'sessionManagerApp/error.html', {})
+			return render(request, 'error.html', {})
 		
 		group = request.POST.get("selectedDepartment")
 
@@ -136,9 +136,9 @@ class ManageSessionsView(View):
 		if not request.user.is_authenticated:
 			return redirect(login_redirect_url)
 		if not Setting.objects.first().canChangeSessions:
-			return render(request, 'sessionManagerApp/error.html', {})
+			return render(request, 'error.html', {})
 		if not StudentInfo.objects.filter(user=request.user).exists():
-			return render(request, 'sessionManagerApp/error.html', {})
+			return render(request, 'error.html', {})
 
 		u = request.user
 
@@ -170,9 +170,30 @@ class ViewSessionsView(View):
 		session = get_object_or_404(Session, id=session_id)
 		
 		if not Professor.objects.filter(user=request.user).exists():
-			return render(request, 'sessionManagerApp/error.html', {})
+			return render(request, 'error.html', {})
 
 		if Professor.objects.get(user=request.user) != session.professor:
-			return render(request, 'sessionManagerApp/error.html', {})
+			return render(request, 'error.html', {})
 
 		return render(request, 'sessionManagerApp/view.html', {'session': session } )
+
+class DropSessionView(View):
+	def get(self, request, session_id):
+		if not request.user.is_authenticated:
+			return redirect(login_redirect_url)
+
+		session = get_object_or_404(Session, id=session_id)
+		return render(request, 'sessionManagerApp/drop.html', {'session': session})
+
+class DropSession(View):
+	def get(self, request, session_id):
+		if not request.user.is_authenticated:
+			return redirect(login_redirect_url)
+
+		session = get_object_or_404(Session, id=session_id)
+		student = get_object_or_404(StudentInfo, user=request.user)
+
+		if student.sessions.filter(id=session.id).exists():
+			student.sessions.remove(session)
+
+		return redirect('profileApp:sessions')

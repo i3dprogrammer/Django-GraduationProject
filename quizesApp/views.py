@@ -46,7 +46,7 @@ class QuizesView(View):
         session = get_object_or_404(Session, id=session_id)
 
         if session.professor is None:
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         prof = None
         if Professor.objects.filter(user=request.user).exists():
@@ -56,7 +56,7 @@ class QuizesView(View):
             student = get_object_or_404(StudentInfo, user=request.user)
 
             if not session in student.sessions.all():
-                return render(request, 'sessionManagerApp/error.html', {})
+                return render(request, 'error.html', {})
             
             
             quizes_grades = []
@@ -77,10 +77,10 @@ class QuizesView(View):
                 'has_perm': HasPerm(request.user, session)
             }
             
-            return render(request, 'quizesApp/index.html', context)
+            return render(request, 'quizesApp/index.v2.html', context)
         else:
             if session.professor != prof:
-                return render(request, 'sessionManagerApp/error.html', {})
+                return render(request, 'error.html', {})
 
             context = {
                 'quizes': session.quiz_set.order_by('-id'),
@@ -90,7 +90,7 @@ class QuizesView(View):
             }
 
             context['colors'] = [y <= timezone.now() for y in [x.deadline for x in context['quizes']]]
-            return render(request, 'quizesApp/index.html', context)
+            return render(request, 'quizesApp/index.v2.html', context)
 
     #TODO: We need to check 1 file sizes, file extensions.
     def post(self, request, session_id):
@@ -102,9 +102,9 @@ class QuizesView(View):
         #If it's professor posting, it would be a quiz.
         if Professor.objects.filter(user=request.user).exists():
             if session.professor == None:
-                return render(request, 'sessionManagerApp/error.html', {})
+                return render(request, 'error.html', {})
             if session.professor != Professor.objects.get(user=request.user):
-                return render(request, 'sessionManagerApp/error.html', {})
+                return render(request, 'error.html', {})
             #TODO Check deadline, Check max_grade
             post_deadline = datetime.datetime.strptime(request.POST.get('date') + " " + request.POST.get('time'), '%Y-%m-%d %H:%M')
             quiz = Quiz(max_grade=request.POST.get('max_grade'), session=session, quizFile=request.FILES['quiz_file'], deadline=post_deadline)
@@ -117,19 +117,19 @@ class QuizesView(View):
 
         # If the student doesn't take this session.
         if not session in student.sessions.all():
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         # If the quiz is not in a session the student takes.
         if not quiz in session.quiz_set.all():
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
         
         # If the student already uploaded an answer.
         if quiz.studentsCompleted.filter(student=student).exists():
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         # If Quiz already ended.
         if quiz.deadline <= timezone.now():
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         answer = QuizComplete(grade="---", answerFile=request.FILES['file'], student=student)
         answer.save()
@@ -146,7 +146,7 @@ class DeleteQuizView(View):
         quiz = get_object_or_404(Quiz, id=quiz_id)
         
         if not HasPerm(request.user, quiz.session):
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         quiz.delete()
 
@@ -160,7 +160,7 @@ class QuizResultsView(View):
         quiz = get_object_or_404(Quiz, id=quiz_id)
 
         if not HasPerm(request.user, quiz.session):
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         context = {
             'quiz': quiz,
@@ -177,7 +177,7 @@ class QuizResultsView(View):
         quiz = get_object_or_404(Quiz, id=quiz_id)
 
         if not HasPerm(request.user, quiz.session):
-            return render(request, 'sessionManagerApp/error.html', {})
+            return render(request, 'error.html', {})
 
         grades = request.POST.getlist('grade')
         i = 0

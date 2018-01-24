@@ -1,45 +1,8 @@
-{% extends "layout.html" %}
-{% block title %} Quizes {% endblock %}
-{% block content %}
-
+{% extends "sessionLayout.html" %}
+{% block title %} {{session.course.name}} Quizes {% endblock %}
+{% block quizes_active %}active{%endblock%}
 {% load index %}
-
-<div class="alert alert-danger hidden">
-    <strong>Error!</strong> 
-    <div class="errors inline">
-
-    </div>
-</div>
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>{{session.course.name}} <div class="inline pull-right">{{session.startTime|time:"h:i A"}} - {{session.endTime|time:"h:i A"}}</div></h1>
-            <h1>
-                <small style="color:gray;">
-                    {% if not prof %}
-                        <div class="row">
-                            <div class="col-md-8">
-                                Professor: <a href="{% url 'professorsApp:viewProf' session.professor.id %}">{{session.professor}}</a>
-                            </div>
-                            <div class="col-md-4">
-                                <button onclick="location.href='{% url 'sessionManagerApp:drop_view' session.id %}'" class="pull-right btn btn-danger"><b>Drop Course</b></button>
-                            </div>
-                        </div>
-                    {% else %}
-                        Total Students: <span>{{session.studentinfo_set.count}}</span>
-                    {% endif %}
-                </small>
-            </h1>
-            <hr/>
-        </div>
-    </div>
-
-    <ul class="nav nav-tabs" id="myTabs">
-        <li class="active"><a href="{% url 'quizesApp:view' session.id %}">Quizes</a></li>
-        <li><a href="{% url 'lecturesApp:view' session.id %}">Lecture Files</a></li>
-    </ul>
-
+{% block session_data %}
     <div class="row">
         <div class="col-md-12">
             <div class="list-group">
@@ -187,7 +150,6 @@
           </div>
         </div>
       </div>
-</div>
 {% endblock %}
 
 

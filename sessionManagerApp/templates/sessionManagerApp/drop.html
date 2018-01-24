@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %} Are you sure? {% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h3>Are you sure you want to drop {{session.course.name}}? <br/> This is not reversable.</h3>
+        <center>
+            <button onclick="location.href='{% url 'sessionManagerApp:drop' session.id %}'" class="btn btn-success"><b>Yes</b></button>
+            <button onclick="location.href='{% url 'quizesApp:view' session.id %}'" class="btn btn-warning"><b>No</b></button>
+        </center>
+    </div>
+</div>
+{% endblock %}

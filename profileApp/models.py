@@ -32,7 +32,7 @@ class CompletedCourse(models.Model):
 	written_result = models.IntegerField()
 	oral_result = models.IntegerField()
 	app_result = models.IntegerField()
-	# 
+	
 	def save(self, *args, **kwargs):
 		self.semester.updateGPA()
 		super(CompletedCourse, self).save(*args, **kwargs)

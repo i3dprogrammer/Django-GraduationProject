@@ -1,34 +1,9 @@
-{% extends "layout.html" %}
-{% block title %} Manage year sessions {% endblock %}
-{% block content %}
-
+{% extends "sessionLayout.html" %}
 {% load index %}
 
-<div class="container">
-    <div class="errors">
-
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h1>{{session.course.name}} <div class="inline pull-right">{{session.startTime|time:"h:i A"}} - {{session.endTime|time:"h:i A"}}</div></h1>
-            <h1>
-                <small style="color:gray;">
-                    {% if not has_perm %}
-                        Professor: <a href="{% url 'professorsApp:viewProf' session.professor.id %}">{{session.professor}}</a>
-                    {% else %}
-                        Total Students: <span>{{session.studentinfo_set.count}}</span>
-                    {% endif %}
-                </small>
-            </h1>
-            <hr/>
-        </div>
-    </div>
-
-    <ul class="nav nav-tabs" id="myTabs">
-        <li><a href="{% url 'quizesApp:view' session.id %}">Quizes</a></li>
-        <li class="active"><a href="{% url 'profileApp:schedule' %}">Lecture Files</a></li>
-    </ul>
-
+{% block title %} {{session.course.name}} Lectures {% endblock %}
+{% block lectures_active %}active{%endblock%}
+{% block session_data %}
     <div class="list-group">
         {% for lec in lectures %}
             <a class="list-group-item">
@@ -96,9 +71,6 @@
             </div>
         </div>
     </div>
-
-</div>
-
 {% endblock %}
 
 {% block js_code %}

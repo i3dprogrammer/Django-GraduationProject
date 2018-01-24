@@ -5,7 +5,7 @@ from departmentsApp.models import Group
 from sessionManagerApp.models import Session
 
 
-#Why the fuck StudentInfo not Student? xD
+# Why the fuck StudentInfo not Student? xD
 class StudentInfo(models.Model):
 	user = models.OneToOneField(User)
 	year = models.IntegerField(default=1)
