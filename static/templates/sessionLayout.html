@@ -21,11 +21,27 @@
                                     Professor: <a href="{% url 'professorsApp:viewProf' session.professor.id %}">{{session.professor}}</a>
                                 </div>
                                 <div class="col-md-4">
-                                    <button onclick="location.href='{% url 'sessionManagerApp:drop_view' session.id %}'" class="pull-right btn btn-danger"><b>Drop Course</b></button>
+                                    <div class="pull-right">
+                                        {% if session.chatActive %}
+                                            <button class="btn btn-success"><b>Join chatroom!</b></button>
+                                        {% endif %}
+                                        <button onclick="location.href='{% url 'sessionManagerApp:drop_view' session.id %}'" class="btn btn-danger"><b>Drop Course</b></button>
+                                    </div>
                                 </div>
                             </div>
                         {% else %}
-                            Total Students: <span>{{session.studentinfo_set.count}}</span>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    Total Students: <span>{{session.studentinfo_set.count}}</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-right">
+                                        {% if not session.chatActive %}
+                                            <button class="btn btn-success"><b>Start chatroom!</b></button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         {% endif %}
                     </small>
                 </h1>

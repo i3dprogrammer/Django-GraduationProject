@@ -3,6 +3,7 @@ from professorsApp.models import Professor
 from coursesApp.models import Course
 from django.contrib.auth.models import User
 from datetime import timedelta, datetime, date
+#from channels import Group
 
 class Session(models.Model):
 	DAYS_OF_WEEK_CHOICES = (
@@ -14,12 +15,30 @@ class Session(models.Model):
 		('6', 'Thursday'),
 		('7', 'Friday'),
 	)
-	professor = models.ForeignKey(Professor, null=True, blank=True)
-	course = models.ForeignKey(Course)
+	professor = models.ForeignKey(Professor, null=True, blank=True, on_delete=models.CASCADE)
+	course = models.ForeignKey(Course, on_delete=models.CASCADE)
 	startTime = models.TimeField()
 	endTime = models.TimeField(editable=False)
 	dayOfWeek = models.CharField(max_length=1, choices=DAYS_OF_WEEK_CHOICES, default='1')
 	location = models.CharField(max_length=15, default='P512')
+	chatActive = models.BooleanField(default=False, blank=False, null=False)
+
+	# def chat_getCharGroup(self):
+	# 	return 'chat-{0}'.format(self.id)
+
+	# def chat_addUserToGroup(self, reply_channel):
+	# 	Group(self.chat_getCharGroup()).add(reply_channel)
+
+	# def chat_broadcastMessage(self, text, user, system = False):
+	# 	broadcasted_message = ''
+	# 	if System:
+	# 		broadcasted_message = '[System] {0} {1}'.format(user, text)
+	# 	else:
+	# 		broadcasted_message = '[{0}] {1}'.format(user, text)
+
+	# 	Group(self.chat_getCharGroup()).send({
+	# 		'text': broadcasted_message,
+	# 	})
 
 	def save(self, *args, **kwargs):
 		self.endTime = (datetime.combine(date(1, 1, 1), self.startTime) + timedelta(hours = self.course.duration.hour, minutes=self.course.duration.minute)).time()

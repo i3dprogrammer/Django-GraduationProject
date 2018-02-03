@@ -19,13 +19,13 @@ class LecturesView(View):
         if session.professor == None:
             return render(request, 'error.html', {})
 
-        HasPerm = False
+        prof = False
 
         # Check if the professor is the owner of the session.
         if Professor.objects.filter(user=request.user).exists():
             if not session.professor == Professor.objects.get(user=request.user):
                 return render(request, 'error.html', {})
-            HasPerm = True
+            prof = True
         # Check if the student has the session.
         elif StudentInfo.objects.filter(user=request.user).exists():
             if not session in StudentInfo.objects.get(user=request.user).sessions.all():
@@ -34,7 +34,7 @@ class LecturesView(View):
         context = {
             'session': session,
             'lectures': Lecture.objects.filter(session=session),
-            'has_perm': HasPerm,
+            'prof': prof,
         }
 
         return render(request, 'lecturesApp/index.v2.html', context)
@@ -49,13 +49,13 @@ class LecturesView(View):
         if session.professor == None:
             return render(request, 'error.html', {})
 
-        HasPerm = False
+        prof = False
 
         # Check if the POST made by the owner professor.
         if Professor.objects.filter(user=request.user).exists():
             if not session.professor == Professor.objects.get(user=request.user):
                 return render(request, 'error.html', {})
-            HasPerm = True
+            prof = True
         else:
             return render(request, 'error.html', {})
 
@@ -65,7 +65,7 @@ class LecturesView(View):
         context = {
             'session': session,
             'lectures': Lecture.objects.filter(session=session),
-            'has_perm': HasPerm,
+            'prof': prof,
         }
 
         return render(request, 'lecturesApp/index.v2.html', context)
@@ -83,13 +83,10 @@ class DeleteLectureView(View):
         if session.professor == None:
             return render(request, 'error.html', {})
 
-        HasPerm = False
-
         # Check if the POST made by the owner professor.
         if Professor.objects.filter(user=request.user).exists():
             if not session.professor == Professor.objects.get(user=request.user):
                 return render(request, 'error.html', {})
-            HasPerm = True
         else:
             return render(request, 'error.html', {})
 

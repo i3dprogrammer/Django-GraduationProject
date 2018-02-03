@@ -8,7 +8,7 @@ class Group(models.Model):
 		return self.name
 
 class Department(models.Model):
-    prequel = models.OneToOneField(Group)
+    prequel = models.OneToOneField(Group, on_delete=models.CASCADE)
     year = models.IntegerField()
     sequels = models.ManyToManyField(Group, related_name="group_sequels")
 

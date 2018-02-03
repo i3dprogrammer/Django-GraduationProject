@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 class Professor(models.Model):
-	user = models.OneToOneField(User, null=True, blank=True)
+	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length=100)
 	info = models.TextField(max_length=1000)
 	image = models.ImageField(null=True, blank=True)

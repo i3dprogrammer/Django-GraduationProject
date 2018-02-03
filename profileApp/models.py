@@ -12,7 +12,7 @@ class PublicNotification(models.Model):
 		return self.notification[:100]
 
 class UserSemester(models.Model):
-	info = models.ForeignKey(StudentInfo)
+	info = models.ForeignKey(StudentInfo, on_delete=models.CASCADE)
 	GPA = models.FloatField(default=0.0)
 
 	def updateGPA(self): # TODO: Fix this, this is temporary.
@@ -27,8 +27,8 @@ class UserSemester(models.Model):
 		return str(self.id) + "# " + self.info.user.first_name + " " + self.info.user.last_name
 
 class CompletedCourse(models.Model):
-	semester = models.ForeignKey(UserSemester)
-	course = models.ForeignKey(Course)
+	semester = models.ForeignKey(UserSemester, on_delete=models.CASCADE)
+	course = models.ForeignKey(Course, on_delete=models.CASCADE)
 	written_result = models.IntegerField()
 	oral_result = models.IntegerField()
 	app_result = models.IntegerField()

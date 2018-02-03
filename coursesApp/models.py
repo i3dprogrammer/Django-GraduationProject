@@ -11,7 +11,7 @@ class Course(models.Model):
 	max_oral_result = models.IntegerField(default=20)
 	max_app_result = models.IntegerField(default=40)
 	info = models.TextField(max_length=1000, null=True, blank=True)
-	group = models.ForeignKey(Group, default=1)
+	group = models.ForeignKey(Group, default=1, on_delete=models.CASCADE)
 	prequels = models.ManyToManyField("Course", blank=True, related_name="prerequisites+")
 	
 	def __str__(self):
