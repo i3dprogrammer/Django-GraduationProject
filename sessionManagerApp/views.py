@@ -197,3 +197,20 @@ class DropSession(View):
 			student.sessions.remove(session)
 
 		return redirect('profileApp:sessions')
+
+class TestingView(View):
+	def get(self, request, session_id):
+		if not request.user.is_authenticated:
+			return redirect(login_redirect_url)
+
+		prof = False
+		session = get_object_or_404(Session, id=session_id)
+		if Professor.objects.filter(user=request.user).exists():
+			prof = True
+
+
+		context = {
+			'prof': prof,
+			'session': session,
+		}
+		return render(request, 'sessionManagerApp/chat.html', context)

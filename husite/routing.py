@@ -9,7 +9,7 @@ application = ProtocolTypeRouter({
     # Empty for now (http->django views is added by default)
     'websocket': AuthMiddlewareStack(
         URLRouter([
-            url('^sessions/$', MyConsumer)
+            url(r'^sessions/(?P<session_id>[0-9]+)$', MyConsumer)
         ])
     )
 })

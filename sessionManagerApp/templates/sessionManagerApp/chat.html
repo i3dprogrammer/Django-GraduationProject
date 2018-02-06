@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+{% block title %} Quizes {% endblock %}
+{% block content %}
+<div class="chat">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>
+                    {{session.course.name}} - Chat Room
+                    {% if prof %}
+                        <button class="btn btn-danger pull-right">Close the chat room.</button>
+                    {% endif %}
+                </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="chat-container-shadow">
+                    <div class="messages-container">
+                        <ul class="list-group list-unstyled list-messages" style="padding-top: 20px;">
+                            
+                        </ul>
+                    </div>
+                    <div class="input-container">
+                        <div class="row">
+                            <div class="col-md-11">
+                                <div class="input-group">
+                                    <div class="input-group-addon">Message</div>
+                                    <input type="text" class="form-control" id='message' onkeydown="send_text_key(event);">
+                                </div>  
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-default btn-block" onclick="send_text();" style="margin-left: 0px;">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" hidden>
+                <div class="users-list-container">
+                    <div class="test">
+                        <h3>Users</h3>
+                    </div>
+                    <div class="list-group list-users" style="padding-top: 20px;">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_code %}
+<script>
+    let ws = '';
+
+    function add_message_text(text){
+        $('.list-messages').append(
+            `<li class="list-group-item">${text}</li>`
+        );
+    }
+
+    $(function(){
+        add_message_text('Connecting to server...');
+        let protocol = 'ws';
+        if(location.protocol == 'https:')
+            protocol = 'wss';
+        
+        // Javascript
+        ws = new WebSocket(`${protocol}://${location.host}/sessions/{{session.id}}`)
+
+        ws.onopen = function(){
+            add_message_text('Connected.');
+        };
+        ws.onmessage = function(e){
+            // Parse the incoming JSON dictionary.
+            message = JSON.parse(e.data);
+            // Show the messages to the users.
+            add_message_text(message.text);
+            // On user connected, add them to the users list.
+            for(var name of message.add_users){
+                add_user(name['name']);
+            }
+            // Remove the user if disconnected.
+            for(var name of message.remove_users){
+                remove_user(name['name']);
+            }
+        }
+
+        ws.onclose = function(e){
+            add_message_text(`Disconnected. Erorr code: ${e.code}`);
+        }
+
+        ws.onerror = function(){
+            add_message_text('Error occurred, disconnecting from chat.');
+        }
+    });
+
+    // Sends specified text to the connected websocket.
+    function send_manual_text(message){
+        ws.send(message);
+    }
+
+    // Sends the chat input to the server websocket and clears the input.
+    function send_text(){
+        var message = $("#message").val();
+        ws.send(message);
+        $("#message").val("");
+    }
+
+    // On enter keydown in the input, send the text.
+    function send_text_key(e){
+        if(e.which == 13)
+            send_text();
+    }
+
+    // Add specific user to the users list
+    function add_user(username){
+        $('.list-users').append(
+            `<a class="list-group-item">${username}</a>`
+        );
+    }
+
+    // Remove specific user from the users list
+    function remove_user(username){
+        var childList = $('.list-users').children();
+        for(var x=0; x<childList.length; x++)
+        {
+            if(childList[x].innerText == username){
+                childList[x].remove();
+            }
+        }
+    }
+
+    window.onbeforeunload = function(e){
+        ws.close(0);
+    }
+</script>
+{% endblock %}
