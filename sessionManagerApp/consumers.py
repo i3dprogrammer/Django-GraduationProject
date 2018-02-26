@@ -57,25 +57,24 @@ class MyConsumer(WebsocketConsumer):
 
         return fullname
 
-    def disconnect(self):
-        print('test')
-        try:
-            session_id = self.scope['url_route']['kwargs']['session_id']
-            user = self.scope['user']
+    def disconnect(self, close_code):
+        session_id = self.scope['url_route']['kwargs']['session_id']
+        user = self.scope['user']
 
-            # Send broadcast message to all users indicating that you disconnected.
-            self.send_message('[System] {0} Disconnected.'.format(self.get_user_fullname()), remove_users = list(ChatFullName.objects.get(user=user).name))
+        # Send broadcast message to all users indicating that you disconnected.
+        # self.send_message('[System] {0} Disconnected.'.format(self.get_user_fullname()), remove_users = list(ChatFullName.objects.get(user=user).name))
 
-            # Remove the channel name from the group on disconnecting.
-            AsyncToSync(self.channel_layer.group_discard)('chat-{0}'.format(session_id), self.channel_name)
+        self.send_message('[System] {0} Disconnected.'.format(self.get_user_fullname()))
 
-            # On disconnect remove the user from chat users model.
-            ChatFullName.objects.filter(user=user).delete()
+        # Remove the channel name from the group on disconnecting.
+        AsyncToSync(self.channel_layer.group_discard)('chat-{0}'.format(session_id), self.channel_name)
 
-            # session = Session.objects.get(id=session_id)
-            # if Professor.objects.filter(user=user).exists():
-            #     ChatFullName.objects.all().delete()
-            #     session.chatActive = False
-            #     session.save()
-        except:
-            print('Error disconnecting the sockets!')
+        # On disconnect remove the user from chat users list.
+        ChatFullName.objects.filter(user=user).delete()
+
+        # Check if the professor disconnected & close the chat group.
+        # session = Session.objects.get(id=session_id)
+        # if Professor.objects.filter(user=user).exists():
+        #     ChatFullName.objects.all().delete()
+        #     session.chatActive = False
+        #     session.save()

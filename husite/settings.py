@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'quizesApp.apps.QuizesappConfig',
     'lecturesApp.apps.LecturesappConfig',
     'onlineExamsApp.apps.OnlineexamsappConfig',
+    'dashboard.apps.DashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

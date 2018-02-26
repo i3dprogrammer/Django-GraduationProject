@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^quizes/', include('quizesApp.urls')),
     url(r'^lectures/', include('lecturesApp.urls')),
     url(r'exam/', include('onlineExamsApp.urls')),
+    url(r'dashboard/', include('dashboard.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
