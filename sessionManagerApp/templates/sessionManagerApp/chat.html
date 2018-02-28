@@ -8,7 +8,7 @@
                 <h2>
                     {{session.course.name}} - Chat Room
                     {% if prof %}
-                        <button class="btn btn-danger pull-right">Close the chat room.</button>
+                        <button class="btn btn-danger pull-right" onclick="location.href='{% url 'sessionManagerApp:close_chat' session.id %}'">Close the chat room.</button>
                     {% endif %}
                 </h2>
             </div>
@@ -63,12 +63,9 @@
 
     $(function(){
         add_message_text('Connecting to server...');
-        let protocol = 'ws';
-        if(location.protocol == 'https:')
-            protocol = 'wss';
+        let protocol = (location.protocol == 'https:')?'wss:':'ws:';
         
-        // Javascript
-        ws = new WebSocket(`${protocol}://${location.host}/sessions/{{session.id}}`)
+        ws = new WebSocket(`${protocol}//${location.host}/sessions/{{session.id}}`)
 
         ws.onopen = function(){
             add_message_text('Connected.');
@@ -76,12 +73,15 @@
         ws.onmessage = function(e){
             // Parse the incoming JSON dictionary.
             message = JSON.parse(e.data);
-            // Show the messages to the users.
+
+            // Show the incoming message to the user.
             add_message_text(message.text);
+
             // On user connected, add them to the users list.
             for(var name of message.add_users){
                 add_user(name['name']);
             }
+
             // Remove the user if disconnected.
             for(var name of message.remove_users){
                 remove_user(name['name']);

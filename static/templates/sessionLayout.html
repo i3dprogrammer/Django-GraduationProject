@@ -23,7 +23,7 @@
                                 <div class="col-md-4">
                                     <div class="pull-right">
                                         {% if session.chatActive %}
-                                            <button class="btn btn-success"><b>Join chatroom!</b></button>
+                                            <button class="btn btn-success" onclick="location.href='{% url 'sessionManagerApp:chat' session.id %}'"><b>Join chatroom!</b></button>
                                         {% endif %}
                                         <button onclick="location.href='{% url 'sessionManagerApp:drop_view' session.id %}'" class="btn btn-danger"><b>Drop Course</b></button>
                                     </div>
@@ -36,9 +36,9 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="pull-right">
-                                        {% if not session.chatActive %}
-                                            <button class="btn btn-success"><b>Start chatroom!</b></button>
-                                        {% endif %}
+                                        <button class="btn btn-success" onclick="location.href='{% url 'sessionManagerApp:chat' session.id %}'">
+                                            <b>{%if not session.chatActive%}Create{%else%}Join{%endif%} chatroom!</b>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

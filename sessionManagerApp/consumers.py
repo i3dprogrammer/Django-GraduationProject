@@ -8,8 +8,8 @@ from channels.layers import get_channel_layer
 
 class MyConsumer(WebsocketConsumer):
     def connect(self):
-        session_id = self.scope['url_route']['kwargs']['session_id']
-        user = self.scope['user']
+        session_id = self.scope['url_route']['kwargs']['session_id'] # Get the session id from the url
+        user = self.scope['user'] # Get the user
         # Check if the user is authenticated and the session exists.
         if user.is_authenticated and Session.objects.filter(id=session_id).exists():
             session = Session.objects.get(id=session_id)
@@ -17,16 +17,19 @@ class MyConsumer(WebsocketConsumer):
             if (session.chatActive and StudentInfo.objects.filter(user=user, sessions=session)) or (Professor.objects.filter(user=user).exists() and session.professor == Professor.objects.get(user=user)):
                 self.accept()
 
-        if Professor.objects.filter(user=user).exists():
-            ChatFullName.objects.all().delete()
-            session.chatActive = True
-            session.save()
+        # Create a new chat room to store the connected users.
+        # ChatFullName.objects.create(user=user, name=self.get_user_fullname(), session=session)
 
-        ChatFullName.objects.create(user=user, name=self.get_user_fullname(), session=session)
+        # Add the current user channel to the session chat group.
         AsyncToSync(self.channel_layer.group_add)('chat-{0}'.format(session_id), self.channel_name)
-        self.send_message('[System] {0} Connected.'.format(self.get_user_fullname()), add_users=list(ChatFullName.objects.values('name')))
+
+        # Send welcome message.
+        # self.send_message('[System] {0} Connected.'.format(self.get_user_fullname()))
+        # self.send(text_data=json.dumps({'add_users': list(ChatFullName.objects.values('name'))}))
     
     def receive(self, text_data):
+        if not self.check_session_chatActive():
+            self.close()
         self.send_message('[{0}] {1}'.format(self.get_user_fullname(), text_data))
 
     def send_message(self, text_data, add_users = [], remove_users = []):
@@ -47,6 +50,7 @@ class MyConsumer(WebsocketConsumer):
     def chat_message(self, event):
         self.send(text_data=event["text"])
 
+    # Returns professor name or student full name. :/
     def get_user_fullname(self):
         user = self.scope['user']
         fullname = ''
@@ -57,20 +61,25 @@ class MyConsumer(WebsocketConsumer):
 
         return fullname
 
+    def check_session_chatActive(self):
+        session_id = self.scope['url_route']['kwargs']['session_id']
+        if Session.objects.filter(id=session_id).exists():
+            session = Session.objects.get(id=session_id)
+            return session.chatActive
+        return False
+
     def disconnect(self, close_code):
         session_id = self.scope['url_route']['kwargs']['session_id']
-        user = self.scope['user']
+        # user = self.scope['user']
 
         # Send broadcast message to all users indicating that you disconnected.
         # self.send_message('[System] {0} Disconnected.'.format(self.get_user_fullname()), remove_users = list(ChatFullName.objects.get(user=user).name))
-
-        self.send_message('[System] {0} Disconnected.'.format(self.get_user_fullname()))
 
         # Remove the channel name from the group on disconnecting.
         AsyncToSync(self.channel_layer.group_discard)('chat-{0}'.format(session_id), self.channel_name)
 
         # On disconnect remove the user from chat users list.
-        ChatFullName.objects.filter(user=user).delete()
+        # ChatFullName.objects.filter(user=user).delete()
 
         # Check if the professor disconnected & close the chat group.
         # session = Session.objects.get(id=session_id)

@@ -198,19 +198,44 @@ class DropSession(View):
 
 		return redirect('profileApp:sessions')
 
-class TestingView(View):
+class ChatView(View):
 	def get(self, request, session_id):
 		if not request.user.is_authenticated:
 			return redirect(login_redirect_url)
 
 		prof = False
 		session = get_object_or_404(Session, id=session_id)
+
+		# Checks if the user is a professor.
 		if Professor.objects.filter(user=request.user).exists():
+			# Checks if the professor isn't the session owner.
+			if not session.professor == Professor.objects.get(user=request.user):
+				return render(request, 'error.html', {})
 			prof = True
 
+		# If it's professor connecting, make the chat available.
+		if prof == True:
+			session.chatActive = True
+			session.save()
+		else: #Else check if the chat is active or not.
+			if session.chatActive == False:
+				return render(request, 'error.html', {})
 
 		context = {
 			'prof': prof,
 			'session': session,
 		}
 		return render(request, 'sessionManagerApp/chat.html', context)
+
+class CloseChatView(View):
+	def get(self, request, session_id):
+		if not request.user.is_authenticated:
+			return redirect(login_redirect_url)
+
+		session = get_object_or_404(Session, id=session_id)
+		if Professor.objects.filter(user=request.user).exists() and session.professor == Professor.objects.get(user=request.user):
+			session.chatActive = False
+			session.save()
+			return redirect('quizesApp:view', session_id=session_id)
+
+		return render(request, 'error.html', {})

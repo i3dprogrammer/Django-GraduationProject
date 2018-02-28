@@ -42,7 +42,7 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">Quiz Grade</label>
                             <div class="col-md-9">
-                                <input type="number" class="form-control" name="duration" placeholder="Max Quiz Grade"/>
+                                <input type="number" class="form-control" max="{{session.course.max_oral_result}}" min="1" name="duration" placeholder="Max Quiz Grade"/>
                             </div>
                         </div>
                     </form>
@@ -201,7 +201,6 @@
     function deleteAnswer(e){
         var answers = $(e.target).closest("ul");
         var answers_count = answers.children('li').length;
-        console.log(answers_count);
         if(answers_count > 2){
             $(e.target).closest("li").remove();
         }
