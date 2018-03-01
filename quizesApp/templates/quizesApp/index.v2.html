@@ -1,5 +1,5 @@
 {% extends "sessionLayout.html" %}
-{% block title %} {{session.course.name}} Quizes {% endblock %}
+{% block title %} {{session.course.name}} Assignments {% endblock %}
 {% block quizes_active %}active{%endblock%}
 {% load index %}
 {% block session_data %}
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="col-md-5">
                                     <div class="pull-right">
-                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Quiz</b> <span class="glyphicon glyphicon-download-alt"/></button>
+                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Assignment</b> <span class="glyphicon glyphicon-download-alt"/></button>
                                         {% if quizes_grades|index:forloop.counter0 == '???' %}
                                             <form id="form" method="POST" action="" class="inline" enctype="multipart/form-data">
                                                 {% csrf_token %}
@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="pull-right">
-                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Quiz</b> <span class="glyphicon glyphicon-download-alt"/></button>
+                                        <button onclick="location.href='{{quiz.quizFile.url}}'" class="btn btn-default"><b>Download Assignment</b> <span class="glyphicon glyphicon-download-alt"/></button>
                                         <button class="btn btn-default" onclick="location.href='{% url 'quizesApp:delete' quiz.id %}'"><b>Delete</b> <span class="glyphicon glyphicon-trash"/></button>
                                         <button class="btn btn-default" onclick="location.href='{% url 'quizesApp:results' quiz.id %}'"><b>Results</b> <span class="glyphicon glyphicon-signal"/></button>
                                     </div>
@@ -83,7 +83,7 @@
                         </a>
                     {% endif %}
                 {% empty %}
-                    <a class="list-group-item">There's no quizes right now.</a>
+                    <a class="list-group-item">There's no assignments right now.</a>
                 {% endfor %}
             </div>
         </div>
@@ -93,7 +93,7 @@
             <div class="pull-right">
                 {% if prof %}
                     <button onclick="location.href='{% url 'sessionManagerApp:view' session.id %}'" class="btn btn-default"><b>View Session Students</b> <span class="glyphicon glyphicon-th-list"/></button>
-                    <button class="btn btn-default" data-toggle="modal" data-target="#myModal"><b>Add new quiz</b> <span class="glyphicon glyphicon-edit"/></button>
+                    <button class="btn btn-default" data-toggle="modal" data-target="#myModal"><b>Add new assignment</b> <span class="glyphicon glyphicon-edit"/></button>
                 {% endif %}
             </div>
         </div>
@@ -104,7 +104,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Add new quiz to {{session.course.name}}</h4>
+              <h4 class="modal-title" id="myModalLabel">Add new assignment to {{session.course.name}}</h4>
             </div>
             <div class="modal-body">
             <form id="add_quiz_form" method="POST" action="" enctype="multipart/form-data" class="form-horizontal">
@@ -124,7 +124,7 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label">Grade: </label>
                     <div class="col-md-8">
-                        <input type="number" min="1" max="100" class="form-control" name="max_grade"/>
+                        <input type="number" min="1" max="{{session.course.max_oral_result}}" class="form-control" name="max_grade"/>
                     </div>
                 </div>
                 <div class="form-group">
@@ -145,7 +145,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" id="submit_btn" onclick="$('#add_quiz_form').submit()">Add Quiz</button>
+              <button type="button" class="btn btn-primary" id="submit_btn" onclick="$('#add_quiz_form').submit()">Add Assignment</button>
             </div>
           </div>
         </div>

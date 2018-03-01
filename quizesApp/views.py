@@ -127,7 +127,7 @@ class QuizesView(View):
         if quiz.studentsCompleted.filter(student=student).exists():
             return render(request, 'error.html', {})
 
-        # If Quiz already ended.
+        # If quiz already ended.
         if quiz.deadline <= timezone.now():
             return render(request, 'error.html', {})
 

@@ -28,7 +28,7 @@ urlpatterns = [
 	url(r'^profile/', include('profileApp.urls')),
     url(r'^courses/', include('coursesApp.urls')),
     url(r'^departments/', include('departmentsApp.urls')),
-    url(r'^quizes/', include('quizesApp.urls')),
+    url(r'^assignments/', include('quizesApp.urls')),
     url(r'^lectures/', include('lecturesApp.urls')),
     url(r'exam/', include('onlineExamsApp.urls')),
     url(r'dashboard/', include('dashboard.urls')),

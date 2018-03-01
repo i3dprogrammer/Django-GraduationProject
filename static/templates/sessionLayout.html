@@ -50,8 +50,9 @@
         </div>
 
         <ul class="nav nav-tabs" id="myTabs">
-            <li class="{% block quizes_active %}{%endblock%}"><a href="{% url 'quizesApp:view' session.id %}">Quizes</a></li>
+            <li class="{% block quizes_active %}{%endblock%}"><a href="{% url 'quizesApp:view' session.id %}">Assignments</a></li>
             <li class="{% block lectures_active %}{%endblock%}"><a href="{% url 'lecturesApp:view' session.id %}">Lecture Files</a></li>
+            <li class="{% block online_quizes_active %}{%endblock%}"><a href="{% url 'onlineExamsApp:list' session.id %}">Quizes</a></li>
         </ul>
 
         {% block session_data %}

@@ -1,0 +1,52 @@
+{% extends "sessionLayout.html" %}
+{% block title %} {{session.course.name}} Quizes {% endblock %}
+{% block online_quizes_active %}active{%endblock%}
+{% load index %}
+{% block session_data %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="list-group">
+            {% for exam in session.onlineexam_set.all %}
+                {% if not prof %}
+
+                {% else %}
+                    <a class="list-group-item {% if exam.date_time_start < now %}list-group-item-danger{%endif%}">
+                        <div class="row pgRow">
+                            <div class="col-md-3">
+                                <b>Starts</b> <span class="date">{{exam.date_time_start|date:"M. d, Y, "}}</span> <span class="date">{{exam.date_time_start|time:"h:i A"}}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <b>Duration</b> <span class="duration">{{exam.duration}} min</span>
+                            </div>
+                            <div class="col-md-2">
+                                <b>Grade</b> <span class="grade">{{exam.quiz_grade}}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <b>Questions</b> <span class="questions">{{exam.question_set.all.count}}</span>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="pull-right">
+                                    <button class="btn btn-default" onclick="location.href='{% url 'onlineExamsApp:delete' session.id exam.id %}'"><b>Delete</b> <span class="glyphicon glyphicon-trash"/></button>
+                                    <button class="btn btn-default" onclick="location.href='{% url 'quizesApp:results' exam.id %}'"><b>Results</b> <span class="glyphicon glyphicon-signal"/></button>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endif %}
+            {% empty %}
+                <a class="list-group-item">There's no quizes right now.</a>
+            {%endfor%}
+        </div>
+    </div> 
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="pull-right">
+            {% if prof %}
+                <button onclick="location.href='{% url 'sessionManagerApp:view' session.id %}'" class="btn btn-default"><b>View Session Students</b> <span class="glyphicon glyphicon-th-list"/></button>
+                <button onclick="location.href='{% url 'onlineExamsApp:add' session.id %}'" class="btn btn-default" data-toggle="modal" data-target="#myModal"><b>Add new quiz</b> <span class="glyphicon glyphicon-edit"/></button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
